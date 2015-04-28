@@ -1,3 +1,16 @@
 #create a ZTP user for ownership of all ZTP related files
 groupadd ztp
-usermod -a -G ztp pi
+
+#Check to see if user pi exists aka is this raspian
+USER_EXISTS=`getent passwd pi | wc -c`
+
+if  [ $USER_EXISTS > 1 ]
+then
+    #Pi user exists
+    echo "pi user exists"
+    sudo usermod -a -G ztp pi
+else
+    #Pi user does not exist
+    echo "pi user does not exist"
+    sudo usermod -a -G ztp `sudo whoami`
+fi
