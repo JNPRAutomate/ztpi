@@ -1,0 +1,2 @@
+mkdir /srv/ftp
+chown -R root:ftp /srv/ftp

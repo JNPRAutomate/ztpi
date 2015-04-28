@@ -1,0 +1,47 @@
+#Set correct ztp permission
+chgrp -R ztp /opt/ztp
+chmod -R 775 /opt/ztp
+
+# Set vsftpd user homedir to /ztp/files
+usermod -d /opt/ztp/files ftp
+#remove default ftp directory
+rm -rf /srv/ftp
+#link ftp directory to ZTP files directory
+sudo ln -s /opt/ztp/files /srv/ftp
+#backup existing vsftpd config file
+mv /etc/vsftpd.conf /opt/ztp/etc/cfgbackup
+#link custom config file for vsftpd
+ln -s /opt/ztp/etc/vsftpd.conf /etc/vsftpd.conf
+/etc/init.d/vsftpd restart
+
+# Set vsftpd user homedir to /ztp/files
+sudo rm -rf /etc/default/atftpd
+sudo rm -rf /srv/tftp
+sudo ln -s /opt/ztp/files /srv/tftp
+sudo ln -s /opt/ztp/etc/atftpd /etc/default/atftpd
+sudo update-rc.d atftpd defaults
+sudo touch /var/log/atftpd.log
+sudo chown nobody.nogroup /var/log/atftpd.log
+sudo /etc/init.d/atftpd restart
+
+
+# Set ISC to source files from /ztp/etc which sets DHCP to eth1 and default config
+sudo rm -rf /etc/default/isc-dhcp-server
+sudo rm -rf /etc/dhcp/dhcpd.conf
+sudo ln -s /opt/ztp/etc/isc-dhcp-server /etc/default/isc-dhcp-server
+sudo ln -s /opt/ztp/etc/dhcpd.conf /etc/dhcp/dhcpd.conf
+sudo update-rc.d isc-dhcp-server defaults
+sudo /etc/init.d/isc-dhcp-server restart
+
+# Make Symbolic link for nginx webroot to point to /ztp/files
+sudo rm -rf /usr/share/nginx/www
+sudo ln -s /opt/ztp/files /usr/share/nginx/www
+sudo update-rc.d nginx defaults
+sudo /etc/init.d/nginx restart
+
+# Repoint rsyslog file + enable network syslog
+sudo rm -rf /etc/rsyslog.conf
+sudo ln -s /opt/ztp/etc/rsyslog.conf /etc/rsyslog.conf
+sudo ln -s /opt/ztp/etc/rsyslogd-ztp /etc/rsyslog.d/ztp_log.conf
+sudo ln -s /opt/ztp/etc/logrotate-ztp /etc/logrotate.d/ztp
+sudo /etc/init.d/rsyslog restart
