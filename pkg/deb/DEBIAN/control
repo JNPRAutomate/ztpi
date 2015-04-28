@@ -4,7 +4,7 @@ Section: network
 Priority: optional
 Architecture: all
 Essential: no
-Depends: isc-dhcp-server (>= 0.0), nginx-full, atftpd, vsftpd, screen, mtr, nmap, traceroute, whois, tcpdump, dhcpdump
+Depends: isc-dhcp-server (>= 4.2), nginx-full (>= 1.4), atftpd (>= 0.7), vsftpd (>= 3.0), screen, mtr, nmap, traceroute, whois, tcpdump, dhcpdump
 Maintainer: Juniper Automation <needemail@juniper.net>
 Installed-Size: 1024
 Description: ZTP Server

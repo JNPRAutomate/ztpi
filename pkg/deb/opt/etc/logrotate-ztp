@@ -1,0 +1,20 @@
+/var/log/ztp-hosts.log
+{
+        size 5m
+        rotate 7
+        daily
+        missingok
+        notifempty
+        delaycompress
+        compress
+}
+/var/log/ztp-services.log
+{
+        size 5m
+        rotate 7
+        daily
+        missingok
+        notifempty
+        delaycompress
+        compress
+}
