@@ -1,8 +1,13 @@
-pkg:
+.PHONY: pkg
+
+pkgname = ZTPi-$(shell cat version)
+build_dir = _build_tmp
+
+pkg: 
 	echo "Creating build directories"
-	export PKG_NAME=ZTPi-`cat `
-	export BUILD_DIR=_build_tmp
-	mkdir $BUILD_DIR/$PKG_NAME
-	cp -R pkg/* $BUILD_DIR/$PKG_NAME
-	cd _build_tmp/
-	dpkg-deb --build $PKG_NAME
+	mkdir -p $(build_dir)/$(pkgname)
+	cp -R pkg/deb/* $(build_dir)/$(pkgname) 
+	dpkg-deb --build $(build_dir)/$(pkgname)
+
+clean:
+	rm -fr $(build_dir)
