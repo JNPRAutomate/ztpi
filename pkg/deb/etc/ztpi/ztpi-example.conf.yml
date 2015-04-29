@@ -1,0 +1,30 @@
+#ZTPi Configuration file
+
+dhcp:
+    interface: eth1
+    subnet: 172.32.32.0
+    netmask: 255.255.255.0
+    range:
+        start: 172.32.32.20
+        end: 172.32.32.200
+        options:
+            routers: 172.32.32.254
+            broadcast-address: 172.32.32.255
+    hosts:
+        - host:
+            name: ex2200-01
+            hw-ethernet: "54:e0:32:89:5b:c1"
+            options:
+                log-servers: 172.32.32.254
+                host-name: ztp-ex2200-01
+                ztp-file-server: 172.32.32.254
+                ztp-ops.config-file-name: ztp-ex2200-01.cfg
+        - host:
+            name: srx-01
+            hw-ethernet: "f8:c0:01:dd:c8:00"
+            options:
+                log-servers: 172.32.32.254
+                host-name: ztp-srx-01
+                bootfile-name: /ztp-srx-01.cfg
+                tftp-server-name: 172.32.32.254
+                ztp-ops.config-file-name: ztp-ex2200-01.cfg

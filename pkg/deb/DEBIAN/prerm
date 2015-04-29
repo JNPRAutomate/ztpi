@@ -1,2 +1,2 @@
 #restore vsftpd config file
-mv /opt/ztp/etc/cfgbackup/vsftpd.conf /etc/vsftpd.conf
+mv /opt/ztpi/etc/cfgbackup/vsftpd.conf /etc/vsftpd.conf
