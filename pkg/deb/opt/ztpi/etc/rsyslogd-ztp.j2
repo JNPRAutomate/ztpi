@@ -1,13 +1,3 @@
-{{ for range in ranges }}
-if $fromhost-ip startswith '{{ range.ip_start}}' then /var/log/ztp-hosts.log
-if $programname == 'atftpd-logs' then /var/log/ztp-services.log
-if $programname == 'vsftpd-logs' then /var/log/ztp-services.log
-if $programname == 'nginx-access' then /var/log/ztp-services.log
-if $programname == 'nginx-error' then /var/log/ztp-services.log
-if $programname == 'dhcpd' then /var/log/ztp-services.log
-& ~
-{{ endfor }}
-
 # provides UDP syslog reception
 $ModLoad imudp
 $UDPServerRun 514
