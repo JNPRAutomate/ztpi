@@ -50,8 +50,8 @@ $InputFileSeverity error
 $InputFileFacility local7
 $InputRunFileMonitor
 
-{{ for range in ranges }}
-if $fromhost-ip startswith '{{ range.ip_start}}' then /var/log/ztp-hosts.log
+{{ for subnet in subnets }}
+if $fromhost-ip startswith '{{ subnet.address}}' then /var/log/ztp-hosts.log
 if $programname == 'atftpd-logs' then /var/log/ztp-services.log
 if $programname == 'vsftpd-logs' then /var/log/ztp-services.log
 if $programname == 'nginx-access' then /var/log/ztp-services.log
