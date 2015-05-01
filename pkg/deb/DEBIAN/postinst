@@ -2,46 +2,53 @@
 chgrp -R ztp /opt/ztpi
 chmod -R 775 /opt/ztpi
 
+#configure vsftpd
 # Set vsftpd user homedir to /ztp/files
 usermod -d /opt/ztpi/files ftp
-#remove default ftp directory
-rm -rf /srv/ftp
-#link ftp directory to ZTP files directory
-ln -s /opt/ztpi/files /srv/ftp
 #backup existing vsftpd config file
 mv /etc/vsftpd.conf /opt/ztpi/etc/cfgbackup
 #link custom config file for vsftpd
 ln -s /opt/ztpi/etc/vsftpd.conf /etc/vsftpd.conf
+#update service
 /etc/init.d/vsftpd restart
 
-# Set vsftpd user homedir to /ztp/files
-sudo rm -rf /etc/default/atftpd
-sudo rm -rf /srv/tftp
-sudo ln -s /opt/ztpi/files /srv/tftp
-sudo ln -s /opt/ztpi/etc/atftpd /etc/default/atftpd
-sudo update-rc.d atftpd defaults
-sudo touch /var/log/atftpd.log
-sudo chown nobody.nogroup /var/log/atftpd.log
-sudo /etc/init.d/atftpd restart
+#configure atftpd
+#backup existing config file
+mv /etc/atftpd /opt/ztpi/etc/cfgbackup
+#link custom config file for vsftpd
+ln -s /opt/ztpi/etc/atftpd /etc/default/atftpd
+update-rc.d atftpd defaults
+touch /var/log/atftpd.log
+chown nobody.nogroup /var/log/atftpd.log
+#update service
+/etc/init.d/atftpd restart
 
+#configure isc-dhcp-server
+#backup existing config files
+mv /etc/default/isc-dhcp-server /opt/ztpi/etc/cfgbackup
+mv /etc/dhcp/dhcpd.conf /opt/ztpi/cfgbackup
+#link config files
+ln -s /opt/ztpi/etc/isc-dhcp-server /etc/default/isc-dhcp-server
+ln -s /opt/ztpi/etc/dhcpd.conf /etc/dhcp/dhcpd.conf
+#update service
+update-rc.d isc-dhcp-server defaults
+/etc/init.d/isc-dhcp-server restart
 
-# Set ISC to source files from /ztp/etc which sets DHCP to eth1 and default config
-sudo rm -rf /etc/default/isc-dhcp-server
-sudo rm -rf /etc/dhcp/dhcpd.conf
-sudo ln -s /opt/ztpi/etc/isc-dhcp-server /etc/default/isc-dhcp-server
-sudo ln -s /opt/ztpi/etc/dhcpd.conf /etc/dhcp/dhcpd.conf
-sudo update-rc.d isc-dhcp-server defaults
-sudo /etc/init.d/isc-dhcp-server restart
+#configure nginx
+#disable default site
+rm /etc/nginx/sites-enabled/default
+#install new configuration
+ln -s /opt/ztpi/etc/ztpi-nginx.conf /etc/nginx/sites-enabled/ztpi-nginx.conf
+#update service
+update-rc.d nginx defaults
+/etc/init.d/nginx restart
 
-# Make Symbolic link for nginx webroot to point to /ztp/files
-sudo rm -rf /usr/share/nginx/www
-sudo ln -s /opt/ztpi/files /usr/share/nginx/www
-sudo update-rc.d nginx defaults
-sudo /etc/init.d/nginx restart
-
-# Repoint rsyslog file + enable network syslog
-sudo rm -rf /etc/rsyslog.conf
-sudo ln -s /opt/ztpi/etc/rsyslog.conf /etc/rsyslog.conf
-sudo ln -s /opt/ztpi/etc/rsyslogd-ztp /etc/rsyslog.d/ztp_log.conf
-sudo ln -s /opt/ztpi/etc/logrotate-ztp /etc/logrotate.d/ztp
-sudo /etc/init.d/rsyslog restart
+#configure rsyslogd
+#backup existing config
+mv /etc/rsyslog.conf /opt/ztpi/etc/cfgbackup
+#link config files
+ln -s /opt/ztpi/etc/rsyslog.conf /etc/rsyslog.conf
+ln -s /opt/ztpi/etc/rsyslogd-ztp /etc/rsyslog.d/ztp_log.conf
+ln -s /opt/ztpi/etc/logrotate-ztp /etc/logrotate.d/ztp
+#update service
+/etc/init.d/rsyslog restart

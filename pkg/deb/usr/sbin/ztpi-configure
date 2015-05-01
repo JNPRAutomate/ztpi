@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+import os
+import yaml
+
+#handle the generation of the ztpi configuration files
+
+#template locations
+dhcpd_conf_j2 = "/opt/ztpi/etc/dhcpd.conf.j2"
+isc_dhcp_server_j2 = "/opt/ztpi/etc/isc-dhcp-server.j2"
+logrotate_ztp_j2 = "/opt/ztpi/etc/logrotate-ztp.j2"
+rsyslogd_ztp_j2 = "/opt/ztpi/etc/rsyslogd-ztp.j2"
+
+#template destinations
+dhcpd_conf = "/opt/ztpi/etc/dhcpd.conf"
+isc_dhcp_server = "/opt/ztpi/etc/isc-dhcp-server"
+logrotate_ztp = "/opt/ztpi/etc/logrotate-ztp"
+rsyslogd_ztp = "/opt/ztpi/etc/rsyslogd-ztp"
+
+#ztpi config file
+ztpi_config = "/etc/ztpi/ztpi.conf"
+
+#load config file
+try:
+    ztpi_config_file = open(ztp_config, "r+")
+    ztpi_config_data = yaml.load(ztpi_config_file.read())
+    ztpi_config_file.close()
+except:
+    print "Unable to read {0} configuration file".format(ztpi_config_file)
+
+#generate dhcpd configuration
+
+#generate isc-dhcp-server configuration
+try:
+    #default dhcpd interface
+    dhcpd_inteface = 'eth0'
+
+    #load template file
+    isc_dhcp_server_tmpl_file = open(isc_dhcp_server_j2, "rw+")
+    isc_dhcp_server_data = isc_dhcp_server_tmpl_file.read()
+    isc_dhcp_server_tmpl_file.close()
+    #process template
+    isc_dhcp_server_tmpl = jinja2.Template(isc_dhcp_server_data)
+    if 'dhcp-server' in ztpi_config_data.keys():
+        if 'interface' in ztpi_config_data["dhcp-server"].keys():
+            dhcpd_inteface = ztpi_config_data["dhcp-server"]["interface"]
+
+    #write out config file
+    isc_dhcp_server_file = open(isc_dhcp_server,"rw+")
+    isc_dhcp_server_file.write(isc_dhcp_server_tmpl.render(dhcp_inteface=dhcpd_inteface))
+    isc_dhcp_server_file.close()
+except:
+    print "Unable to read {0} configuration file".format(isc_dhcp_server_tmpl_file)
+
+#generate logrotate-ztp configuration
+try:
+    #default dhcpd interface
+    size = '5m'
+    rotate = '7'
+
+    #load template file
+    logrotate_ztp_tmpl_file = open(logrotate_ztp_j2,"rw+")
+    logrotate_ztp_data = logrotate_ztp_tmpl_file.read()
+    logrotate_ztp_tmpl_file.close()
+    #process template
+    logrotate_ztp_tmpl = jinja2.Template(logrotate_ztp_data)
+    if 'logging' in ztpi_config_data.keys():
+        if 'max-size' in ztpi_config_data['logging'].keys():
+            size = ztpi_config_data['logging']['max-size']
+        if 'rotate' in ztpi_config_data['logging'].keys():
+            rotate = ztpi_config_data['logging']['rotate']
+
+    #write out config file
+    logrotate_ztp_file = open(logrotate_ztp,'rw+')
+    logrotate_ztp_file.write(logrotate_ztp_tmpl.render(size=size,rotate=rotate))
+
+except:
+    print "Unable to read {0} configuration file".format(isc_dhcp_server_tmpl_file)
+
+#generate rsyslogd-ztp configuration

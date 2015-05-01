@@ -1,2 +1,33 @@
 #restore vsftpd config file
+rm /etc/vsftpd.conf
 mv /opt/ztpi/etc/cfgbackup/vsftpd.conf /etc/vsftpd.conf
+#update service
+/etc/init.d/vsftpd restart
+
+#restore atftpd config file
+rm /etc/atftpd
+mv /opt/ztpi/etc/cfgbackup/atftpd /etc/atftpd
+#update service
+/etc/init.d/atftpd restart
+
+#restore isc-dhcp-server config file
+mv /opt/ztpi/etc/cfgbackup/isc-dhcp-server /etc/default/isc-dhcp-server
+mv /opt/ztpi/cfgbackup/dhcpd.conf /etc/dhcp/dhcpd.conf
+#update service
+update-rc.d isc-dhcp-server defaults
+/etc/init.d/isc-dhcp-server restart
+
+#restore nginx config file
+rm /etc/nginx/sites-enabled/ztpi-nginx.conf
+ln -s  /etc/nginx/sites-available/default  /etc/nginx/sites-enabled/default
+#update service
+update-rc.d nginx defaults
+/etc/init.d/nginx restart
+
+#restore rsyslogd
+rm /etc/rsyslog.conf
+rm /etc/rsyslog.d/ztp_log.conf
+rm /etc/logrotate.d/ztp
+mv /opt/ztpi/etc/cfgbackup/rsyslog.conf /etc/rsyslog.conf
+#update service
+/etc/init.d/rsyslog restart

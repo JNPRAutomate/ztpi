@@ -7,3 +7,55 @@ if $programname == 'nginx-error' then /var/log/ztp-services.log
 if $programname == 'dhcpd' then /var/log/ztp-services.log
 & ~
 {{ endfor }}
+
+# provides UDP syslog reception
+$ModLoad imudp
+$UDPServerRun 514
+
+# provides TCP syslog reception
+$ModLoad imtcp
+$InputTCPServerRun 514
+
+# provides access to plain files
+$ModLoad imfile
+
+# Catch nginx Logs
+$InputFileName /var/log/nginx/error.log
+$InputFileTag nginx-errors
+$InputFileStateFile nginx-errors
+$InputFileSeverity error
+$InputFileFacility local7
+$InputRunFileMonitor
+
+$InputFileName /var/log/nginx/access.log
+$InputFileTag nginx-access
+$InputFileStateFile nginx-access
+$InputFileSeverity error
+$InputFileFacility local7
+$InputRunFileMonitor
+
+# Catch atftpd Logs
+$InputFileName /var/log/atftpd.log
+$InputFileTag atftpd-logs
+$InputFileStateFile atftpd-logs
+$InputFileSeverity error
+$InputFileFacility local7
+$InputRunFileMonitor
+
+# Catch vsftpd Logs
+$InputFileName /var/log/vsftpd.log
+$InputFileTag vsftpd-logs
+$InputFileStateFile vsftpd-logs
+$InputFileSeverity error
+$InputFileFacility local7
+$InputRunFileMonitor
+
+{{ for range in ranges }}
+if $fromhost-ip startswith '{{ range.ip_start}}' then /var/log/ztp-hosts.log
+if $programname == 'atftpd-logs' then /var/log/ztp-services.log
+if $programname == 'vsftpd-logs' then /var/log/ztp-services.log
+if $programname == 'nginx-access' then /var/log/ztp-services.log
+if $programname == 'nginx-error' then /var/log/ztp-services.log
+if $programname == 'dhcpd' then /var/log/ztp-services.log
+& ~
+{{ endfor }}

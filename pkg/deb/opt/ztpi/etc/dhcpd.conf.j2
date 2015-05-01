@@ -1,0 +1,67 @@
+#
+# ZTP DHCP Config
+#
+
+default-lease-time 600;
+max-lease-time 7200;
+
+# Use this to send dhcp log messages to a different log file (you also
+# have to hack syslog.conf to complete the redirection).
+log-facility local7;
+
+option space ztp-ops;
+option ztp-ops.image-file-name code 0 = text;
+option ztp-ops.config-file-name code 1 = text;
+option ztp-ops.image-file-type code 2 = text;
+option ztp-ops.transfer-mode code 3 = text;
+option ztp-ops-encap code 43 = encapsulate ztp-ops;
+
+option ztp-file-server code 66 = { ip-address };
+
+subnet 172.32.32.0 netmask 255.255.255.0 {
+  range 172.32.32.20 172.32.32.200;
+  option routers 172.32.32.254;
+  option broadcast-address 172.32.32.255;
+#
+# The following is an example of settings for entire scope.
+#
+# In this example, all devices will inherit these settings.
+#
+# option ztp-file-server 172.32.32.254;
+# option host-name "netboot";
+# option ztp-ops.image-file-name "jinstall-qfx-5-flex-13.2X51-D20.2-domestic-signed.tgz";
+# option ztp-ops.transfer-mode "http";
+
+#
+# Below is a template for EX/QFX switches using Option 43 / ZTP Codes
+#
+# NOTE: You need to set "hardware ethernet" to the MAC address of the Port connecting to the ZTP server
+#       Typically vme.0 or me.0 for management port and interface vlan.0 for inband.
+#
+  host ex2200-01 {
+    hardware ethernet 54:e0:32:89:5b:c1;
+    option log-servers 172.32.32.254;
+    option host-name "ztp-ex2200-01";
+    option ztp-file-server 172.32.32.254;
+    option ztp-ops.config-file-name "ztp-ex2200-01.cfg";
+
+    #
+    # Disable Junos upgrades until user copies file to the /ztp/files/ directory.
+    #
+    # option ztp-ops.image-file-name "jinstall-qfx-5-flex-13.2X51-D20.2-domestic-signed.tgz";
+  }
+
+#
+# Below is a template for SRX firewalls using Auto-Install feature
+#
+# NOTE: You need to set "hardware ethernet" to the MAC address of the Port connecting to the ZTP server
+#       By default the "auto install" interface is the untrust interface [g|f]e-0/0/0
+#
+  host srx-01 {
+    hardware ethernet f8:c0:01:dd:c8:00;
+    option log-servers 172.32.32.254;
+    option host-name "ztp-srx-01";
+    option bootfile-name "/ztp-srx-01.cfg";
+    option tftp-server-name "172.32.32.254";
+  }
+}

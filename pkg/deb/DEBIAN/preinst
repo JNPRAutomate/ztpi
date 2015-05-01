@@ -14,3 +14,5 @@ else
     echo "pi user does not exist"
     sudo usermod -a -G ztp `sudo whoami`
 fi
+
+#Install required python packages
