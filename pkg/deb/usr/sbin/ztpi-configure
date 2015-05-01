@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import os
+import sys
 import yaml
+import netaddr
 
 #handle the generation of the ztpi configuration files
 
@@ -25,9 +26,21 @@ try:
     ztpi_config_data = yaml.load(ztpi_config_file.read())
     ztpi_config_file.close()
 except:
-    print "Unable to read {0} configuration file".format(ztpi_config_file)
+    e = sys.exc_info()[0]
+    print "Unable to read {0} configuration file".format(ztpi_config)
 
 #generate dhcpd configuration
+try:
+    #load template file
+    dhcpd_tmpl_file = open(dhcpd_conf_j2,"rw+")
+    dhcpd_data = dhcpd_tmpl_file.read()
+    dhcpd_tmpl_file.close()
+    #process template
+    dhcpd_tmpl = jinja2.Template(dhcpd_data)
+    if 'dhcp-server' in ztpi_config_data.keys():
+        dhcpd_file = open(dhcpd_conf,"rw+")
+        
+except:
 
 #generate isc-dhcp-server configuration
 try:
@@ -49,7 +62,8 @@ try:
     isc_dhcp_server_file.write(isc_dhcp_server_tmpl.render(dhcp_inteface=dhcpd_inteface))
     isc_dhcp_server_file.close()
 except:
-    print "Unable to read {0} configuration file".format(isc_dhcp_server_tmpl_file)
+    e = sys.exc_info()[0]
+    print "Unable to read {0} configuration file".format(isc_dhcp_server_j2)
 
 #generate logrotate-ztp configuration
 try:
@@ -74,6 +88,34 @@ try:
     logrotate_ztp_file.write(logrotate_ztp_tmpl.render(size=size,rotate=rotate))
 
 except:
-    print "Unable to read {0} configuration file".format(isc_dhcp_server_tmpl_file)
+    e = sys.exc_info()[0]
+    print "Unable to read {0} configuration file".format(logrotate_ztp_j2)
 
 #generate rsyslogd-ztp configuration
+try:
+    #load template file
+    rsyslogd_ztp_tmpl_file = open(rsyslogd_ztp_j2,"rw+")
+    rsyslogd_ztp_data = rsyslogd_ztp_tmpl_file.read()
+    rsyslogd_ztp_tmpl_file.close()
+    #process template
+    rsyslogd_ztp_tmpl = jinja2.Template(rsyslogd_ztp_data)
+    if 'dhcp-server' in ztpi_config_data.keys():
+        if 'subnets' in ztpi_config_data['dhcp-server'].keys():
+            if len(ztpi_config_data['dhcp-server']['subnets']) > 0:
+                tmpl_subnets = []
+                #build subnet list
+                for item in ztpi_config_data['dhcp-server']['subnets']:
+                    new_subnet_mask = netaddr.IPAddress(item["subnet"]["netmask"])
+                    new_subnet_str = item["subnet"]["address"]
+                    prefix_len = new_subnet_mask.bits().count('1')
+                    new_subnet = netaddr.IPNetwork('{0}/{1}'.format(new_subnet_str,str(prefix_len)))
+                    new_subnets = list(new_subnet.subnet(24))
+                    for s in new_subnets:
+                        tmpl_subnets.append({"address":str(s.network).strip(".0")})
+
+                rsyslogd_ztp_file = open(rsyslogd_ztp,"rw+")
+                rsyslogd_ztp_file.write(rsyslogd_ztp_tmpl.render(subnets=tmpl_subnets))
+                rsyslogd_ztp_file.close()
+except:
+        e = sys.exc_info()[0]
+        print "Unable to read {0} configuration file".format(rsyslogd_ztp_j2)

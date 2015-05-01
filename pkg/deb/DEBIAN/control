@@ -4,7 +4,7 @@ Section: network
 Priority: optional
 Architecture: all
 Essential: no
-Depends: python-jinja2 (>= 2.7), isc-dhcp-server (>= 4.2), nginx-full (>= 1.4), atftpd (>= 0.7), vsftpd (>= 3.0), screen (>= 4.1), mtr (>= 0.8), nmap (>= 6.0), traceroute (>= 2.0), whois (>= 5.0), tcpdump (>= 4.5), dhcpdump (>= 1.8)
+Depends: python-ipaddr (>= 2.1), python-jinja2 (>= 2.7), isc-dhcp-server (>= 4.2), nginx-full (>= 1.4), atftpd (>= 0.7), vsftpd (>= 3.0), screen (>= 4.1), mtr (>= 0.8), nmap (>= 6.0), traceroute (>= 2.0), whois (>= 5.0), tcpdump (>= 4.5), dhcpdump (>= 1.8)
 Maintainer: Juniper Automation <jnprautomate@juniper.net>
 Installed-Size: 1024
 Description: ZTP Server
